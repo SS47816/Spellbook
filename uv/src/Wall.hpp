@@ -21,7 +21,7 @@ class Wall
 
     std::vector<std::vector<double>> distribution_;
 
-    void recieveDose(UVTube *tube, double dt);
+    void recieveDose(const UVTube *tube, const double dt);
 
-    double calcDist(double tube_x, double tube_y, int i, int j, double z);
+    double calcDist(const double tube_x, const double tube_y, const int i, const int j, const double z);
 };

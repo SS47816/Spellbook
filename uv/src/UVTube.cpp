@@ -12,13 +12,13 @@ UVTube::UVTube()
 
     for (int i = 0; i < sections_; ++i)
     {
-        y_[i] = i/sections_*length_ + height_;
+        y_[i] = i/this->sections_*this->length_ + this->height_;
     }
 }
 
 UVTube::~UVTube() {}
 
-void UVTube::move(double dt)
+void UVTube::move(const double dt)
 {
-    x_ += speed_ * dt;
+    this->x_ += this->speed_ * dt;
 }

@@ -7,9 +7,10 @@ int main()
 {
     std::cout << "Step 0" << std::endl;
     std::unique_ptr<Wall> wall = std::make_unique<Wall>();
+    std::cout << "Step 1" << std::endl;
     std::unique_ptr<UVTube> tube = std::make_unique<UVTube>();
 
-    std::cout << "Step 1" << std::endl;
+    
     const double t_max = 5.0;
     const double dt = 0.1;
 

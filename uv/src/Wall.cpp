@@ -17,7 +17,7 @@ Wall::Wall()
 
 Wall::~Wall() {}
 
-void Wall::recieveDose(UVTube *tube, double dt)
+void Wall::recieveDose(const UVTube *tube, const double dt)
 {
     for (auto tube_y : tube->y_)    // every section of the UV tube
     {
@@ -34,7 +34,7 @@ void Wall::recieveDose(UVTube *tube, double dt)
     }
 }
 
-double Wall::calcDist(double tube_x, double tube_y, int i, int j, double z)
+double Wall::calcDist(const double tube_x, const double tube_y, const int i, const int j, const double z)
 {
     const double x = i*mesh_size_ - tube_x;
     const double y = j*mesh_size_ - tube_y;

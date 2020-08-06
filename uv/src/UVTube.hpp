@@ -9,7 +9,7 @@ class UVTube
     UVTube();
     ~UVTube();
 
-    void move(double dt);
+    void move(const double dt);
 
     double length_;   // tube itself
     double height_;  // from ground
