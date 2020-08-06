@@ -1,7 +1,5 @@
 #include <memory>
-#include "matplotlibcpp.h"
-
-namespace plt = matplotlibcpp;
+#include <fstream>
 
 #include "Wall.hpp"
 #include "UVTube.hpp"
@@ -21,8 +19,23 @@ int main()
         wall->recieveDose(tube.get(), dt);
         tube->move(dt);
     }
+
+    std::ofstream csv;
+    csv.open("heatmap.csv");
+    for (size_t i = 0; i < wall->distribution_.size(); i++)
+    {
+        std::string line;
+        for (size_t j = 0; j < wall->distribution_[0].size(); j++)
+        {
+            line += std::to_string(wall->distribution_[i][j]);
+            line += ",";
+        }
+        line += "\n";
+        csv << line;
+    }
     
-    plt::plot({1,3,2,4});
-    plt::show();
+    csv.close();
+    std::cout << "Done!" << std::endl;
+
     return 0;
 }
