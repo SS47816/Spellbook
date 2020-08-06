@@ -2,6 +2,13 @@
 
 Wall::Wall()
 {
+    length_ = 5;             // tube itself
+    height_ = 3;             // from ground
+    mesh_size_ = 0.1; 
+    n_x_ = length_/mesh_size_;
+    n_y_ = height_/mesh_size_;
+    z_ = 2.0;
+    
     for (int i = 0; i < n_x_; ++i)
     {
         distribution_.push_back(std::vector<double>(n_y_, 0.0));

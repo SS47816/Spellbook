@@ -12,12 +12,12 @@ class Wall
     Wall();
     ~Wall();
     
-    double length_ = 5;             // tube itself
-    double height_ = 3;             // from ground
-    double mesh_size_ = 0.1; 
+    double length_;             // tube itself
+    double height_;             // from ground
+    double mesh_size_; 
     int n_x_ = length_/mesh_size_;
     int n_y_ = height_/mesh_size_;
-    double z_ = 2.0;
+    double z_;
 
     std::vector<std::vector<double>> distribution_;
 
