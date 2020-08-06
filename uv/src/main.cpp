@@ -1,4 +1,7 @@
 #include <memory>
+#include "matplotlibcpp.h"
+
+namespace plt = matplotlibcpp;
 
 #include "Wall.hpp"
 #include "UVTube.hpp"
@@ -19,5 +22,7 @@ int main()
         tube->move(dt);
     }
     
+    plt::plot({1,3,2,4});
+    plt::show();
     return 0;
 }

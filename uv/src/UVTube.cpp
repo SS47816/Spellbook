@@ -12,7 +12,7 @@ UVTube::UVTube()
 
     for (int i = 0; i < sections_; ++i)
     {
-        y_.push_back(i/sections_*length_ + height_);
+        y_.push_back(i*length_/sections_ + height_);
     }
 
 }
