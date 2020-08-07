@@ -21,6 +21,7 @@ class UVTube:
         ----------
         `dt` : time step (delta) in double
         """
+        self.x_ = self.x_ + self.speed_*dt
 
 class Wall:
 
@@ -90,13 +91,15 @@ def main():
     tube_intensity = 1.83
     tube_speed = 0.05
 
-    dt = 0.1
-    x_start = 0.0
-    x_end = 5.0
+    dt = 0.1                # time step [s]
+    x_start = 0.0           # the starting position of the robot in horizontal direction(x) [m]
+    x_end = 5.0             # the end position of the robot in horizontal direction(x) [m]
 
+    # instanciate wall and tube
     wall = Wall(wall_length, wall_height, wall_mesh_size, dist_to_wall, init_dose)
     tube = UVTube(tube_length, tube_height, tube_n_sections, tube_intensity, x_start, tube_speed)
 
+    # prepare plot
     fig, ax = plt.subplots()
     ax.set_xlabel('Wall width (x' + '%.2f' % wall_mesh_size + ' m)')
     ax.set_ylabel('Wall height (x' + '%.2f' % wall_mesh_size + ' m)')
@@ -104,17 +107,22 @@ def main():
     ims = []
 
     while tube.x_ <= x_end:
+        # run the simulation
         wall.recieveDose(tube, dt)
         tube.move(dt)
 
+        # add the current frame to the animation
         im = ax.imshow(wall.distribution, cmap='hot', interpolation='nearest', animated=True)
         ims.append([im])
         
+        # print current progress in percentage
         msg = "Progress: " + "%d" % int((tube.x_-x_start)/(x_end-x_start)*100) + "% "
         print (msg, end="\r")
     
+    # display the animation
     ani = animation.ArtistAnimation(fig, ims, interval=50, repeat_delay=1000, blit=True)
     plt.show()
+
 
 if __name__ == "__main__":
     main()
