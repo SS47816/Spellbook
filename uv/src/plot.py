@@ -75,6 +75,9 @@ def main():
 
         im = ax.imshow(wall.distribution, cmap='hot', interpolation='nearest', animated=True)
         ims.append([im])
+        
+        msg = "Progress: " + "%d" % int((tube.x_-x_start)/(x_end-x_start)*100) + "% "
+        print (msg, end="\r")
     
     ani = animation.ArtistAnimation(fig, ims, interval=50, repeat_delay=1000, blit=True)
     plt.show()
