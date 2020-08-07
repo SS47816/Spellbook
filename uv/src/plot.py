@@ -5,35 +5,69 @@ import matplotlib.animation as animation
 class UVTube:
 
     def __init__(self, length, height, sections, intensity, x_start, speed):
-        self.length_ = length
-        self.height_ = height
-        self.sections_ = int(sections)
-        self.intensity_ = intensity
-        self.speed_ = speed
-        self.x_ = x_start                               # horizontal position
-        self.y_ = np.arange(start=height, stop=length+height, step=length/sections, dtype=np.float)
+        self.length_ = length           # length of the tube [m]
+        self.height_ = height           # height of the bottom of the tube from ground [m]
+        self.sections_ = int(sections)  # number of sections that the tube is divided into
+        self.intensity_ = intensity     # UV intensity (total) [J/s]
+        self.speed_ = speed             # robot moving speed (in x direction) [m/s]
+        self.x_ = x_start               # horizontal position of the tube [m]
+        self.y_ = np.arange(start=height, stop=length+height, step=length/sections, dtype=np.float) # vertical position of each section[m]
 
     def move(self, dt):
-        self.x_ = self.x_ + self.speed_*dt
+        """
+        Move the robot one step forward
+        
+        Parameters
+        ----------
+        `dt` : time step (delta) in double
+        """
 
 class Wall:
 
     def __init__(self, length, height, mesh_size, dist_to_wall, init_dose):
-        self.length_ = length
-        self.height_ = height
-        self.mesh_size_ = mesh_size
-        self.n_x_ = int(length/mesh_size)
-        self.n_y_ = int(height/mesh_size)
-        self.z_ = 2.0
-        self.distribution = np.full((self.n_y_, self.n_x_), init_dose, dtype=np.float)
+        self.length_ = length               # length of the wall in horizontal direction(x) [m]
+        self.height_ = height               # length of the wall in vertical direction(y) [m]
+        self.mesh_size_ = mesh_size         # the size of the meshes of the wall in both direction(x, y) [m]
+        self.n_x_ = int(length/mesh_size)   # num of wall meshes in horizontal direction(x)
+        self.n_y_ = int(height/mesh_size)   # num of wall meshes in vertical direction(y)
+        self.z_ = 2.0                       # the normal distance from the robot to the wall [m]
+        self.distribution = np.full((self.n_y_, self.n_x_), init_dose, dtype=np.float)  # 2D matrix containing the dosage at each wall mesh [J]
 
     def calcDist(self, tube_x, tube_y, i, j, z):
+        """
+        Move the robot one step forward
+
+        Parameters
+        ----------
+        `tube_x` : the location of this tube section in horizontal direction(x) in double [m]
+
+        `tube_y` : the location of this tube section in vertical direction(y) in double [m]
+
+        `i` : index of the wall mesh in horizontal direction(x) in int
+
+        `j` : index of the wall mesh in vertical direction(y) in int
+
+        `z` : the normal distance from this tube section to the wall in double [m]
+
+        Return
+        ----------
+        `dist` : the euclidean distance from this tube section to the wall in double [m]
+        """
         x = i*self.mesh_size_ - tube_x
         y = j*self.mesh_size_ - tube_y
         dist = np.sqrt(x*x + y*y + z*z)
         return dist
 
     def recieveDose(self, tube, dt):
+        """
+        Let the wall recieve UV dosage
+        
+        Parameters
+        ----------
+        `tube` : a instance of the class `UVTube` that interacts with this wall
+
+        `dt` : time step (delta) in double [s]
+        """
         for tube_y in tube.y_:
             for i in range(0, self.n_y_):
                 for j in range(0, self.n_x_):
@@ -43,7 +77,7 @@ class Wall:
 
 
 def main():
-    print("Running Simulation...")
+    print("Simulation Started...")
     wall_length = 5.0
     wall_height = 3.0
     wall_mesh_size = 0.1
@@ -64,8 +98,8 @@ def main():
     tube = UVTube(tube_length, tube_height, tube_n_sections, tube_intensity, x_start, tube_speed)
 
     fig, ax = plt.subplots()
-    ax.set_xlabel('Wall width (x0.1m)')
-    ax.set_ylabel('Wall height (x0.1m)')
+    ax.set_xlabel('Wall width (x' + '%.2f' % wall_mesh_size + ' m)')
+    ax.set_ylabel('Wall height (x' + '%.2f' % wall_mesh_size + ' m)')
     ax.set_title('Total Dose Recieved by the Wall (mJ)')
     ims = []
 
