@@ -79,7 +79,7 @@ class Wall:
 
 def main():
     print("Simulation Started...")
-    wall_length = 5.0
+    wall_length = 7.0
     wall_height = 3.0
     wall_mesh_size = 0.1
     dist_to_wall = 2.0
@@ -93,7 +93,7 @@ def main():
 
     dt = 0.1                # time step [s]
     x_start = 0.0           # the starting position of the robot in horizontal direction(x) [m]
-    x_end = 5.0             # the end position of the robot in horizontal direction(x) [m]
+    x_end = wall_length     # the end position of the robot in horizontal direction(x) [m]
 
     # instanciate wall and tube
     wall = Wall(wall_length, wall_height, wall_mesh_size, dist_to_wall, init_dose)
@@ -117,12 +117,16 @@ def main():
         
         # print current progress in percentage
         msg = "Progress: " + "%d" % int((tube.x_-x_start)/(x_end-x_start)*100) + "% "
-        print (msg, end="\r")
+        print(msg, end="\r")
     
     # display the animation
     ani = animation.ArtistAnimation(fig, ims, interval=50, repeat_delay=1000, blit=True)
     plt.show()
 
+    # save the animation
+    print("Saving to gif file...")
+    ani.save('animation.gif', writer='imagemagick', fps=10)
+    print("Done!")
 
 if __name__ == "__main__":
     main()
