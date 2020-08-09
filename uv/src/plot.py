@@ -13,19 +13,19 @@ class UVTube:
         self.x_ = x_start               # horizontal position of the tube [m]
         self.y_ = np.arange(start=height, stop=length+height, step=length/sections, dtype=np.float) # vertical position of each section[m]
 
-    def move(self, dt):
+    def move(self, dt: float):
         """
         Move the robot one step forward
         
         Parameters
         ----------
-        `dt` : time step (delta) in double
+        `dt` : time step (delta) in float
         """
         self.x_ = self.x_ + self.speed_*dt
 
 class Wall:
 
-    def __init__(self, length, height, mesh_size, dist_to_wall, init_dose):
+    def __init__(self, length: float, height: float, mesh_size: float, dist_to_wall: float, init_dose: float):
         self.length_ = length               # length of the wall in horizontal direction(x) [m]
         self.height_ = height               # length of the wall in vertical direction(y) [m]
         self.mesh_size_ = mesh_size         # the size of the meshes of the wall in both direction(x, y) [m]
@@ -34,32 +34,32 @@ class Wall:
         self.z_ = 2.0                       # the normal distance from the robot to the wall [m]
         self.distribution = np.full((self.n_y_, self.n_x_), init_dose, dtype=np.float)  # 2D matrix containing the dosage at each wall mesh [J]
 
-    def calcDist(self, tube_x, tube_y, i, j, z):
+    def calcDist(self, tube_x: float, tube_y: float, i: int, j: int, z: float) -> float:
         """
         Move the robot one step forward
 
         Parameters
         ----------
-        `tube_x` : the location of this tube section in horizontal direction(x) in double [m]
+        `tube_x` : the location of this tube section in horizontal direction(x) in float [m]
 
-        `tube_y` : the location of this tube section in vertical direction(y) in double [m]
+        `tube_y` : the location of this tube section in vertical direction(y) in float [m]
 
         `i` : index of the wall mesh in horizontal direction(x) in int
 
         `j` : index of the wall mesh in vertical direction(y) in int
 
-        `z` : the normal distance from this tube section to the wall in double [m]
+        `z` : the normal distance from this tube section to the wall in float [m]
 
         Return
         ----------
-        `dist` : the euclidean distance from this tube section to the wall in double [m]
+        `dist` : the euclidean distance from this tube section to the wall in float [m]
         """
         x = i*self.mesh_size_ - tube_x
         y = j*self.mesh_size_ - tube_y
         dist = np.sqrt(x*x + y*y + z*z)
         return dist
 
-    def recieveDose(self, tube, dt):
+    def recieveDose(self, tube: UVTube, dt: float):
         """
         Let the wall recieve UV dosage
         
@@ -67,7 +67,7 @@ class Wall:
         ----------
         `tube` : a instance of the class `UVTube` that interacts with this wall
 
-        `dt` : time step (delta) in double [s]
+        `dt` : time step (delta) in float [s]
         """
         for tube_y in tube.y_:
             for i in range(0, self.n_y_):
@@ -79,7 +79,7 @@ class Wall:
 
 def main():
     print("Simulation Started...")
-    wall_length = 7.0
+    wall_length = 5.0
     wall_height = 3.0
     wall_mesh_size = 0.1
     dist_to_wall = 2.0
@@ -91,9 +91,9 @@ def main():
     tube_intensity = 1.83
     tube_speed = 0.05
 
-    dt = 0.1                # time step [s]
+    dt = 0.2                # time step [s]
     x_start = 0.0           # the starting position of the robot in horizontal direction(x) [m]
-    x_end = wall_length     # the end position of the robot in horizontal direction(x) [m]
+    x_end = 5.0             # the end position of the robot in horizontal direction(x) [m]
 
     # instanciate wall and tube
     wall = Wall(wall_length, wall_height, wall_mesh_size, dist_to_wall, init_dose)
