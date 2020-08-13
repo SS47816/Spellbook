@@ -33,6 +33,7 @@ class Wall:
         self.n_y_ = int(height/mesh_size)   # num of wall meshes in vertical direction(y)
         self.z_ = 2.0                       # the normal distance from the robot to the wall [m]
         self.distribution = np.full((self.n_y_, self.n_x_), init_dose, dtype=np.float)  # 2D matrix containing the dosage at each wall mesh [J]
+        self.vis = np.zeros((self.n_y_, self.n_x_), dtype=np.int)  # 2D matrix for visualization
 
     def calcDist(self, tube_x: float, tube_y: float, i: int, j: int, z: float) -> float:
         """
@@ -59,7 +60,7 @@ class Wall:
         dist = np.sqrt(x*x + y*y + z*z)
         return dist
 
-    def recieveDose(self, tube: UVTube, dt: float):
+    def recieveDose(self, tube: UVTube, dt: float, dose_thresh: float):
         """
         Let the wall recieve UV dosage
         
@@ -68,6 +69,8 @@ class Wall:
         `tube` : a instance of the class `UVTube` that interacts with this wall
 
         `dt` : time step (delta) in float [s]
+
+        `dose_thresh` : threshold for dosage in float [mJ]
         """
         for tube_y in tube.y_:
             for i in range(0, self.n_y_):
@@ -75,23 +78,26 @@ class Wall:
                     dist = self.calcDist(tube.x_, self.height_-tube_y, j, i, self.z_)
                     I = tube.intensity_/tube.sections_/(dist*dist)
                     self.distribution[i][j] = self.distribution[i][j] + I*dt
+                    if self.distribution[i][j] >= dose_thresh:
+                        self.vis[i][j] = 1
 
 
 def main():
     print("Simulation Started...")
-    wall_length = 5.0
+    wall_length = 3.0
     wall_height = 3.0
     wall_mesh_size = 0.1
     dist_to_wall = 2.0
-    init_dose = -25.0
+    init_dose = 0.0
+    dose_thresh = 25.0
 
     tube_length = 1.0
     tube_height = 0.65
     tube_n_sections = 10
     tube_intensity = 1.83
-    tube_speed = 0.05
+    tube_speed = 0.04
 
-    dt = 0.2                # time step [s]
+    dt = 0.5                # time step [s]
     x_start = 0.0           # the starting position of the robot in horizontal direction(x) [m]
     x_end = 5.0             # the end position of the robot in horizontal direction(x) [m]
 
@@ -103,16 +109,20 @@ def main():
     fig, ax = plt.subplots()
     ax.set_xlabel('Wall width (x' + '%.2f' % wall_mesh_size + ' m)')
     ax.set_ylabel('Wall height (x' + '%.2f' % wall_mesh_size + ' m)')
-    ax.set_title('Total Dose Recieved by the Wall (mJ)')
+    # ax.set_title('Total Dose Recieved by the Wall (mJ)')
     ims = []
 
+    t = 0.0 # time [s]
     while tube.x_ <= x_end:
         # run the simulation
-        wall.recieveDose(tube, dt)
+        t += dt           # the starting position of the robot in horizontal direction(x) [m]
+        wall.recieveDose(tube, dt, dose_thresh)
         tube.move(dt)
 
         # add the current frame to the animation
-        im = ax.imshow(wall.distribution, cmap='hot', interpolation='nearest', animated=True)
+        # im = ax.imshow(wall.distribution, cmap='hot', interpolation='nearest', animated=True)
+        ax.set_title('Total Dose Recieved by the Wall (mJ)' + ' at t = ' + '%.1f' % t + " s")
+        im = ax.imshow(wall.vis, animated=True)
         ims.append([im])
         
         # print current progress in percentage
@@ -125,7 +135,7 @@ def main():
 
     # save the animation
     print("Saving to gif file...")
-    ani.save('animation.gif', writer='imagemagick', fps=10)
+    ani.save('animation.gif', writer='imagemagick', fps=30)
     print("Done!")
 
 if __name__ == "__main__":
